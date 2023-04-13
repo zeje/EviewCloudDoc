@@ -34,7 +34,7 @@ features:
 
 
 copyright: false
-footer: Copyright © 2023-present eviewgps
+footer: Copyright © 2023-present eviewgps 
 ---
 
 
