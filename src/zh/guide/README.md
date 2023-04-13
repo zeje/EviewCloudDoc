@@ -1,16 +1,36 @@
 ---
-title: 指南
-icon: creative
+title: 对接方案
+icon: iconfont icon-guide
+sidebar: false
 ---
 
-## 功能亮点
+## 对接方案
 
-### Bar
+### [sdk-demo](sdk-demo/README.md)
 
-- [baz](bar/baz.md)
-- ...
 
-### Foo
+<!-- @import "../sequenceDiagram/sdk-demo.md" -->
+<!-- @include: ../sequenceDiagram/sdk-demo.md -->
 
-- [ray](foo/ray.md)
-- ...
+
+### [loctube-lite](loctube-lite/README.md)
+
+<!-- @import "../sequenceDiagram/loctube-lite.md" -->
+<!-- @include: ../sequenceDiagram/loctube-lite.md -->
+
+
+### [数据转发](forward/README.md)
+
+<!-- @import "../sequenceDiagram/forward.md" -->
+<!-- @include: ../sequenceDiagram/forward.md -->
+
+### [第三方服务](third-party/README.md)
+
+
+<!-- @import "../sequenceDiagram/third-party.md" -->
+<!-- @include: ../sequenceDiagram/third-party.md -->
+
+### [loctube](loctube/README.md)
+
+<!-- @import "../sequenceDiagram/loctube.md" -->
+<!-- @include: ../sequenceDiagram/loctube.md -->

@@ -12,7 +12,7 @@ export default hopeTheme({
 
   iconAssets: [
     "iconfont",
-    "//at.alicdn.com/t/c/font_4012891_pping5jjyr.css"
+    "//at.alicdn.com/t/c/font_4012891_g583jslu07s.css"
   ],
 
   logo: "/logo.svg",
