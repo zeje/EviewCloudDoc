@@ -39,6 +39,7 @@ jobs:
       - name: Deploy Docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # 也就是我们刚才生成的 secret
           # This is the branch where the docs are deployed to
           branch: gh-pages
           folder: src/.vuepress/dist
