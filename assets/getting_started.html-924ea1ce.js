@@ -1,0 +1,1 @@
+import{_ as t,W as a,X as r,$ as e,a1 as s}from"./framework-b5158923.js";const c={},n=e("h2",{id:"对接入门",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#对接入门","aria-hidden":"true"},"#"),s(" 对接入门")],-1),_=[n];function o(d,i){return a(),r("div",null,_)}const l=t(c,[["render",o],["__file","getting_started.html.vue"]]);export{l as default};
