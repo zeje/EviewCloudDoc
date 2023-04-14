@@ -11,10 +11,10 @@ export const enNavbar = navbar([
   {
     text: "Evmars",
     icon: "iconfont icon-a-96_iotstudio",
-    prefix: "/zh/evmars/",
+    prefix: "/evmars/",
     children: [{
-      text: "getting started", icon: "iconfont icon-page",
-      link: "getting_started.md"
+      text: "About Evmars", icon: "iconfont icon-page",
+      link: "README.md"
     }],
   },
   {
@@ -22,8 +22,8 @@ export const enNavbar = navbar([
     icon: "iconfont icon-line-gpsdingweiqi",
     prefix: "/smartLocator/",
     children: [{
-      text: "getting started", icon: "iconfont icon-page",
-      link: "getting_started.md"
+      text: "About Smart-Locator", icon: "iconfont icon-page",
+      link: "README.md"
     }],
   },
   {
@@ -31,12 +31,12 @@ export const enNavbar = navbar([
     icon: "iconfont icon-pet",
     prefix: "/katchu/",
     children: [{
-      text: "getting started", icon: "iconfont icon-sort",
-      link: "getting_started.md"
+      text: "About KatchU", icon: "iconfont icon-sort",
+      link: "README.md"
     }],
   },
   {
-    text: "about us",
+    text: "About us",
     icon: "note",
     link: "http://www.eviewgps.com/",
   },

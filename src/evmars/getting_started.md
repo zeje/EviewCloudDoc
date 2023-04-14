@@ -1,9 +1,9 @@
 ---
 title: Getting Started
 index: false
-icon: discover
+icon: iconfont icon-96_iotstudio
 category:
   - evmars
 ---
 
-## 目录
+## Getting Started

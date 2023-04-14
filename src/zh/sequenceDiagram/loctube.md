@@ -1,40 +1,44 @@
+* Evmars-Loctube
+
 ```mermaid
 
 sequenceDiagram
 
-    participant device as eview_device
+    participant device as eview设备
     participant loctube as evmars_loctube
-    participant app as your_server
+    participant app as 您的应用端
 
-    device -> loctube: net protocol(tcp)；message protocol(eview gps protocol)
-    loctube -> loctube: tcp manager
-    loctube -> loctube: analysis message(bytes or hex string)
-    loctube -> loctube: save data to database
+    device ->> loctube: 通讯协议(tcp)；消息协议(eview gps协议)
+    loctube ->> loctube: tcp服务端
+    loctube ->> loctube: 分析字节流
+    loctube ->> loctube: 保存数据到数据库
 
-    app -> loctube : subscribe topic
-    loctube --> app : push json message(mqtt or websocket)
+    app ->> loctube : 订阅mqtt或websocket的topic
+    loctube -->> app : 推送json格式的数据
 
-    app -> loctube : pull message(http)
-    loctube --> app: data（json）
+    app ->> loctube : 通过http接口请求数据
+    loctube -->> app: 返回json格式的数据
 
 ```
+
+* Evmars-Loctube在咔啾（KatchU）的应用场景
 
 ```mermaid
 
     sequenceDiagram
-    participant device as eview_device
+    participant device as eview设备
     participant loctube as evmars_loctube
-    participant app as katchu_server
+    participant app as 咔啾的应用端
 
-    device -> loctube: net protocol(tcp)；message protocol(eview gps protocol)
-    loctube -> loctube: tcp manager
-    loctube -> loctube: analysis message(bytes or hex string)
-    loctube -> loctube: save data to database
+    device ->> loctube: 通讯协议(tcp)；消息协议(eview gps协议)
+    loctube ->> loctube: tcp服务端
+    loctube ->> loctube: 分析字节流
+    loctube ->> loctube: 保存数据到数据库
 
-    app -> loctube : subscribe topic
-    loctube --> app : push json message(mqtt or websocket)
+    app ->> loctube : 订阅mqtt或websocket的topic
+    loctube -->> app : 推送json格式的数据
 
-    app -> loctube : pull message(http)
-    loctube --> app: data（json）
+    app ->> loctube : 通过http接口请求数据
+    loctube -->> app: 返回json格式的数据
 
 ```

@@ -5,7 +5,7 @@ export const zhSidebar = sidebar({
     "",
     {
       // 必要的，分组的标题文字
-      text: "对接方案",
+      text: "上云方案",
       // 可选的, 分组标题对应的图标
       icon: "iconfont icon-guide",
       // 可选的，会添加到每个 item 链接地址之前

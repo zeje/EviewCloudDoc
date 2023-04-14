@@ -1,9 +1,12 @@
 ---
-title: Smart-Locator Catalogue
+title: about Smart-Locator
 index: false
 icon: discover
 category:
   - smartlocator
 ---
 
-## 目录
+## about Smart-Locator
+
+http://www.smart-locator.com/
+

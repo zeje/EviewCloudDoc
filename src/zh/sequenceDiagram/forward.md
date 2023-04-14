@@ -2,16 +2,17 @@
 
 sequenceDiagram
 
-    participant device as eview_device
-    participant loctube as loctube
-    participant server as your_server
+    participant device as eview设备
+    participant loctube as evmars_loctube
+    participant server as 您的服务端
+    participant app as 您的应用端
 
-    device -> loctube: net protocol(tcp)；message protocol(eview gps protocol)
-    loctube -> loctube: tcp manager
-    loctube -> loctube: analysis message(bytes or hex string)
-    loctube -> server : push json message
-    server -> server: save data to database
-    app -> server : pull message(http)
-    server --> app: data（json）
+    device ->> loctube: 通讯协议(tcp)；消息协议(eview gps协议)
+    loctube ->> loctube: tcp服务端
+    loctube ->> loctube: 分析字节流
+    loctube ->> server : 推送json格式的消息
+    server ->> server: 保存数据到数据库
+    app ->> server : 通过http接口请求数据
+    server -->> app: 返回json格式的数据
 
 ```

@@ -1,7 +1,7 @@
 ---
 title: KatchU介绍
 index: false
-icon: discover
+icon: iconfont icon-pet
 category:
   - katchu
 ---

@@ -1,10 +1,10 @@
 ---
-title: 对接方案
+title: 上云方案
 icon: iconfont icon-guide
 sidebar: false
 ---
 
-## 对接方案
+## 上云方案
 
 ### [sdk-demo](sdk-demo/README.md)
 
