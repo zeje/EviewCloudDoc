@@ -3,10 +3,9 @@ import { navbar } from "vuepress-theme-hope";
 export const enNavbar = navbar([
   "/",
   {
-    text: "Guide",
+    text: "To Cloud Solution",
     icon: "iconfont icon-guide",
-    prefix: "/guide/",
-    link: "README.md"
+    link: "/guide/README.md"
   },
   {
     text: "Evmars",

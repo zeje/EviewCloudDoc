@@ -68,8 +68,12 @@ export default hopeTheme({
 
   plugins: {
     comment: {
-      // @ts-expect-error: You should generate and use your own comment service
-      provider: "Waline",
+      provider: "Giscus",
+      comment: true, //启用评论功能
+      repo: "zeje/EviewCloudDoc", //远程仓库
+      repoId: "R_kgDOJWLfzg", //对应自己的仓库Id
+      category: "Announcements",
+      categoryId: "DIC_kwDOJWLfzs4CVwzX" //对应自己的分类Id
     },
 
     // all features are enabled for demo, only preserve features you need here
