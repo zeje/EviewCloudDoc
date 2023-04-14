@@ -1,0 +1,1 @@
+import{_ as t,W as a,X as o,$ as e,a1 as c}from"./framework-fe863d21.js";const r={},s=e("h2",{id:"about-evmars-loctube",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#about-evmars-loctube","aria-hidden":"true"},"#"),c(" about Evmars-Loctube")],-1),n=[s];function _(d,i){return a(),o("div",null,n)}const u=t(r,[["render",_],["__file","index.html.vue"]]);export{u as default};
