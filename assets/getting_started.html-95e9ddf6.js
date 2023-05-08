@@ -1,1 +1,0 @@
-import{_ as t,W as a,X as r,$ as e,a1 as s}from"./framework-fe863d21.js";const n={},c=e("h2",{id:"getting-started",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#getting-started","aria-hidden":"true"},"#"),s(" Getting Started")],-1),d=[c];function _(o,i){return a(),r("div",null,d)}const l=t(n,[["render",_],["__file","getting_started.html.vue"]]);export{l as default};
