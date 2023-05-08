@@ -10,7 +10,32 @@ category:
 ### How to use signature
 #### Verification process
 
-![process](./images/open-api/OpenApiAuthenticationProcess.png)
+``` mermaid
+graph TD
+
+	userRequest(request) --> xClientId{does headers </br> contains </br>X-Client-Id?}
+	xClientId --yes--> getHeader[get headers </br>X-Sign</br>和</br>X-Timestamp]
+    xClientId --"no open-api request"--> auth[Enter the access control process </br> and execute the business logic.]
+    auth --response--> open-api{is it the open-api request}
+    open-api --yes--> setHeader["Sign and set the response header:X-Timestamp,X-Sign</br>Signature algorithm </br> Signature ( response+X-Timestamp+SecureKey )"]
+    setHeader --response--> response(response result)
+    open-api --no--> response
+
+	getHeader --> checkHeader{Check that the difference </br> between </br> X-Timestamp and server time </br> cannot be 5 minutes.}
+    checkHeader --"ok"--> checkSign[Start inspection and signing]
+    checkHeader --"no ok"--> reject[reject request]
+	checkSign --> httpMethod{Judging request mode}
+    httpMethod --"GET or Delete"--> join["Sort the parameter key </br> according to ASCII </br> and then splice it into </br> k1=v1&k2=v2 format."]
+    httpMethod --"other method type"--> contentType{Judging ContentType}
+    contentType --"application/x-www-form-urlencoded"--> join
+    contentType --other--> signature["signature(param+X-Timestamp+SecureKey)"]
+    join --> signature
+
+    signature --> compare{compare X-Sign}
+    compare --different--> reject
+    compare --same--> auth
+
+```
 
 ::: info description
 
@@ -89,7 +114,7 @@ X-Client-Id: kF**********HRZ
 Content-Type: application/json 
 
 {  
-    "expires": 7200 // 过期时间,单位秒.
+    "expires": 7200 // Expiration time, in seconds.
 }
 
 //Return

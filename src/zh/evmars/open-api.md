@@ -10,7 +10,34 @@ category:
 ### 使用签名的方式
 #### 验证流程
 
-![流程](./images/open-api/OpenApiAuthenticationProcess.png)
+``` mermaid
+graph TD
+
+	userRequest(用户请求) --> xClientId{请求头中</br>是否携带</br>X-Client-Id}
+	xClientId --是--> getHeader[获取请求头</br>X-Sign</br>和</br>X-Timestamp]
+    xClientId --"否，非OpenAPI请求"--> auth[进入权限控制流程</br>并执行业务逻辑]
+    auth --响应--> open-api{是否为OpenApi请求}
+    open-api --是--> setHeader["签名并设置响应头:X-Timestamp,X-Sign</br>签名算法Signature ( response+X-Timestamp+SecureKey )"]
+    setHeader --响应--> response(响应结果)
+    open-api --否--> response
+
+	getHeader --> checkHeader{校验X-Timestamp</br>与服务器时间</br>不能相差5分钟}
+    checkHeader --通过--> checkSign[开始验签]
+    checkHeader --不通过--> reject[拒绝请求]
+	checkSign --> httpMethod{判断请求方式}
+    httpMethod --GET或Delete--> join[将参数key按ASCII排序</br>再拼接为k1=v1&k2=v2格式]
+    httpMethod --其他请求--> contentType{判断ContentType}
+    contentType --application/x-www-form-urlencoded--> join
+    contentType --其他--> signature["signature(param+X-Timestamp+SecureKey)"]
+    join --> signature
+
+    signature --> compare{对比请求头X-Sign}
+    compare --不一致--> reject
+    compare --一致--> auth
+
+```
+
+
 
 ::: tip 说明
 
