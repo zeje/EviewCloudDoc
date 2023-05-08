@@ -15,7 +15,13 @@ category:
 
 **Note**:
 
-Request Example: {"key":"value"}
+Request Example: 
+
+``` json
+{ 
+	"key":"value"
+}
+```
 
 **Params**
 

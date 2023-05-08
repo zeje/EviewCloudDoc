@@ -1,5 +1,5 @@
 ---
-title: 发送调用设备功能指令到设备
+title: 获取实时数据
 index: false
 icon: iconfont icon-api
 category:

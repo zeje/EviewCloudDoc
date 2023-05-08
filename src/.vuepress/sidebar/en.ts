@@ -26,14 +26,19 @@ export const enSidebar = sidebar({
       icon: "iconfont icon-a-96_iotstudio",
       prefix: "evmars/",
       children: [
-        "/evmars/getting_started.md",
+        "/evmars/open-api.md",
         "/evmars/custom-sql-term.md",
         "/evmars/api-response.md",
+        "/evmars/evgps-protocol.md",
+        "/evmars/evgps-tsl.md",
+        "/evmars/data-forwarding.md",
         {
           text: "Common API interface",
           icon: "iconfont icon-a-96_iotstudio",
           prefix: "evmars/",
           children: [
+            "/evmars/api/device-get-property.md",
+            "/evmars/api/device-write-property.md",
             "/evmars/api/device-function.md",
             "/evmars/api/device-query.md",
             "/evmars/api/device-state.md",

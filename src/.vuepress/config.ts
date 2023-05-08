@@ -21,8 +21,9 @@ export default defineUserConfig({
     md.use(markdownItPlantuml)
     md.set({ breaks: true })
   },
-  theme,
+  theme
 
   // Enable it with pwa
   // shouldPrefetch: false,
+  
 });

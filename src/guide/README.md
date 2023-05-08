@@ -1,7 +1,6 @@
 ---
 title: To Cloud Solution
 icon: iconfont icon-guide
-sidebar: false
 ---
 
 ## To Cloud Solution

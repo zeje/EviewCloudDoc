@@ -26,14 +26,19 @@ export const zhSidebar = sidebar({
       icon: "iconfont icon-a-96_iotstudio",
       prefix: "evmars/",
       children: [
-        "/zh/evmars/getting_started.md",
+        "/zh/evmars/open-api.md",
         "/zh/evmars/custom-sql-term.md",
         "/zh/evmars/api-response.md",
+        "/zh/evmars/evgps-protocol.md",
+        "/zh/evmars/evgps-tsl.md",
+        "/zh/evmars/data-forwarding.md",
         {
           text: "常用API接口",
           icon: "iconfont icon-a-96_iotstudio",
           prefix: "evmars/",
           children: [
+            "/zh/evmars/api/device-get-property.md",
+            "/zh/evmars/api/device-write-property.md",
             "/zh/evmars/api/device-function.md",
             "/zh/evmars/api/device-query.md",
             "/zh/evmars/api/device-state.md",

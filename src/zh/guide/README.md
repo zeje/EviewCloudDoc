@@ -1,7 +1,6 @@
 ---
 title: 上云方案
 icon: iconfont icon-guide
-sidebar: false
 ---
 
 ## 上云方案

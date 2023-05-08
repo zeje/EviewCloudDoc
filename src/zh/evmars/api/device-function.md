@@ -1,12 +1,12 @@
 ---
-title: 发送调用设备功能指令到设备
+title: 发送调用设备功能指令
 index: false
 icon: iconfont icon-api
 category:
   - evmars
 ---
 
-## 发送调用设备功能指令到设备
+## 发送调用设备功能指令
 
 **接口地址**:`/device/instance/{deviceId}/function/{functionId}`
 **请求方式**:`POST`
@@ -15,7 +15,13 @@ category:
 
 **接口描述**:
 
-请求示例: {"参数":"值"}
+请求示例: 
+
+``` json
+{ 
+	"参数":"值"
+}
+```
 
 **请求参数**
 

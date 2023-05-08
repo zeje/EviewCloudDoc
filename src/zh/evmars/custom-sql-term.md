@@ -1,7 +1,7 @@
 ---
 title: 通用SQL条件
 index: false
-icon: iconfont icon-api
+icon: iconfont icon-blog
 category:
   - evmars
 ---
