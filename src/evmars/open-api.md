@@ -1,5 +1,5 @@
 ---
-Title: calling OpenApi
+title: calling OpenApi
 index: false
 icon: iconfont icon-blog
 category:
@@ -12,7 +12,7 @@ category:
 
 ![process](./images/open-api/OpenApiAuthenticationProcess.png)
 
-:: tip description
+::: info description
 
 1. The `Signature` function in the figure sets the signature mode for the client, and supports `md5' and Sha256'.
 2. The signature information of a request needs to be put in the request header, not the request body.
