@@ -7,7 +7,7 @@ heroText: Eview cloud service platform
 tagline: To provide you with eview gps equipment access services and value-added services.
 actions:
   - text: Evmars
-    link: /zh/evmars/getting_started.md
+    link: /zh/evmars/README.md
     type: primary
 
   - text: Smart-Locator
