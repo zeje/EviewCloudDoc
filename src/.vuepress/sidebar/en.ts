@@ -24,7 +24,7 @@ export const enSidebar = sidebar({
     {
       text: "Evmars-Loctube Solution",
       icon: "iconfont icon-a-96_iotstudio",
-      prefix: "evmars/",
+      prefix: "/evmars",
       children: [
         "/evmars/open-api.md",
         "/evmars/custom-sql-term.md",

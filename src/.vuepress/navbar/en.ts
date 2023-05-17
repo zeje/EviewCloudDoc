@@ -10,11 +10,27 @@ export const enNavbar = navbar([
   {
     text: "Evmars",
     icon: "iconfont icon-a-96_iotstudio",
-    prefix: "/evmars/",
-    children: [{
-      text: "About Evmars", icon: "iconfont icon-page",
-      link: "README.md"
-    }],
+    prefix: "/evmars",
+    children: [
+      {
+        text: "About Evmars", icon: "iconfont icon-page",
+        link: "/README.md"
+      },
+      {
+        text: "Evmars Biz", icon: "iconfont icon-page",
+        prefix: "/biz",
+        children: [
+          {
+            text: "OAuth2.0", icon: "iconfont icon-page",
+            link: "/oauth/README.md"
+          },
+          {
+            text: "agps", icon: "iconfont icon-page",
+            link: "/agps/README.md"
+          }
+        ]
+      }
+    ],
   },
   {
     text: "SmartLocator",
