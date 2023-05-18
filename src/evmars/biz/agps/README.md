@@ -25,7 +25,7 @@ else invalid
      evmarBizServer -->> customerServer: return new token
      customerServer ->> customerServer: cache and use the token
 end
-customerServer ->> evmarBizServer: add http headers,and then proxy the request
+customerServer ->> evmarBizServer: replace the url's base path，add http headers,and then proxy the request
 evmarBizServer ->> evmarBizServer: verify token validity
 alt invalid
      evmarBizServer ->> customerServer: return http 401 error
@@ -54,6 +54,16 @@ POST {{host}}/admin/oauth2/token?grant_type=client_credentials
 Authorization:Basic {{Base64(clientId:clientSecret)}}
 ```
 
+### Replace the base path in the URL
+
+If the device requests the URL of your server: `http://your-domain/url?url=xxxxxxxxxxxx`
+You need to change the URL to: `http://eview-domain/admin/agps/url?url=xxxxxxxxxxxx`
+
+Namely: replace `http://your-domain` with `http://eview-domain/admin/agps`
+
+Of course, `eview-domain` is not an actual domain name, you need to contact the business staff to obtain it
+
+
 ### X-Base-Path instructions
 
 X-Base-Path is the interface path that you expose, such as http://your-domain
@@ -62,3 +72,5 @@ X-Base-Path is the interface path that you expose, such as http://your-domain
 Authorization: Bearer {{Token}}
 X-Base-Path: http://www.your-domain.com
 ```
+
+
