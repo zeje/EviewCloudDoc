@@ -1,7 +1,11 @@
 ---
-title: Oauth2.0
+title: agps代理服务
 icon: iconfont icon-guide
 ---
+
+### 时序图
+
+下图未明确token的过期校验步骤，请自行设计
 
 ```mermaid
 
@@ -22,16 +26,38 @@ else 无效
      evmarBizServer -->> customerServer: 返回新的token
      customerServer ->> customerServer: 缓存并提取token
 end
-customerServer ->> evmarBizServer: 代理请求agps（无需管url及相关参数，直接转发）
+customerServer ->> evmarBizServer: 代理请求agps（需要添加X-Basic-Path请求头）
 evmarBizServer ->> evmarBizServer: 校验token有效性
 alt 无效
      evmarBizServer ->> customerServer: 返回http 401未授权错误
      customerServer -->> device: 返回错误信息response.setHeader("message", "2");
 else 有效
-     evmarBizServer ->> agpsServer: 代理请求agps（无需管url及相关参数，直接转发）
+     evmarBizServer ->> agpsServer: 代理请求agps（需要添加X-Basic-Path请求头）
      agpsServer -->> evmarBizServer:  返回agps
      evmarBizServer -->> customerServer: 返回agps
      customerServer -->> device: 返回agps
 end
 
+```
+
+### Token获取方式
+
+请参考 [Oauth2.0](../oauth/README.md)
+
+● client_secret_basic
+传参方式是将 clientId 和 clientSecret 通过 ‘:’ 号拼接，并使用 Base64 进行编码得到一串字符。将此编码字符串放到请求头(Authorization)去发送请求。
+#### client_secret_basic
+
+```
+POST {{host}}/admin/oauth2/token?grant_type=client_credentials
+Authorization:Basic {{Base64(clientId:clientSecret)}}
+```
+
+### X-Base-Path说明
+
+X-Base-Path为您对外公开的接口路径，如： http://your-domain
+
+```
+Authorization: Bearer {{Token}}
+X-Base-Path: http://www.your-domain.com
 ```

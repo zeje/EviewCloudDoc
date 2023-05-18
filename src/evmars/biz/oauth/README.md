@@ -183,6 +183,166 @@ Pragma: No cache
 
 As you can see from the above code, the relevant parameters are sent in JSON format (Content-Type: application/json). In addition, the HTTP header explicitly specifies that it must not be cached.
 
+## Seven, simplified mode
+
+The simplified mode (implicit grant type) does not go through the server of the third-party application, directly requests a token from the authentication server in the browser, skipping the "authorization code" step, hence the name. All steps are done in the browser, the token is visible to the visitor, and the client does not require authentication.
+
+! [Simplified Mode] (http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051205.png)
+
+Its steps are as follows:
+
+(A) The client directs the user to the authentication server.
+>
+(B) The User decides whether to grant authorization to the Client.
+>
+(C) Assuming the user is authorized, the authentication server directs the user to the "redirect URI" specified by the client and contains the access token in the hash part of the URI.
+>
+(D) The browser makes a request to the resource server, which does not include the Hash value received in the previous step.
+>
+(E) The resource server returns a web page with code that can obtain a token in the Hash value.
+>
+(F) The browser executes the script obtained in the previous step to extract the token.
+>
+(G) The browser sends the token to the client.
+
+Here are the parameters required for these steps.
+
+In Step A, the HTTP request made by the client contains the following parameters:
+
+- response_type: indicates the authorization type, the value here is fixed to "token", required.
+- client_id: Indicates the ID of the client, required.
+- redirect_uri: Indicates the URI of the redirect, optional.
+- scope: indicates the scope of permissions, optional.
+- state: indicates the current state of the client, you can specify any value, the authentication server will return this value unchanged.
+
+Below is an example.
+
+```http
+    GET /authorize?response_type=token&client_id=s6BhdRkqt3&state=xyz
+   &redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1
+    Host: server.example.com
+```
+
+In step C, the authentication server responds with the URI of the client and contains the following parameters:
+
+- access_token: Indicates an access token, required.
+- token_type: Indicates the token type, which is case insensitive, required.
+- expires_in: Indicates the expiration time in seconds. If you omit this parameter, you must set the expiration time in another way.
+- scope: indicates the scope of the permission, which can be omitted if it is consistent with the scope requested by the client.
+- state: If the client's request includes this parameter, the authentication server's response must also contain this parameter exactly.
+
+Below is an example.
+
+```http
+HTTP/1.1 302 Found
+Location: http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA
+&state=xyz&token_type=example&expires_in=3600
+```
+
+In the example above, the authentication server uses the Location field of the HTTP header to specify the URL to be redirected by the browser. Note that the hash section of this URL contains the token.
+
+According to step D above, the next browser will visit the URL specified in Location, but the hash part will not be sent. In the next E step, the code sent by the service provider's resource server extracts the token in the hash.
+
+## VIII. Password Mode
+
+In Resource Owner Password Credentials Grant, the user provides his or her username and password to the client. The client uses this information to request authorization from the Service Provider.
+
+In this mode, the user must give his password to the client, but the client must not store the password. This is usually used in situations where the user has a high level of trust in the client, such as when the client is part of the operating system or is produced by a well-known company. The authentication server can only consider using this mode if other authorization modes cannot be executed.
+
+! [Password Mode] (http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051206.png)
+
+Its steps are as follows:
+
+(A) The User provides the Client with a username and password.
+>
+(B) The client sends the username and password to the authentication server, requesting a token from the latter.
+>
+(C) After the authentication server confirms that it is correct, it provides the access token to the client.
+
+In Step B, the HTTP request made by the client contains the following parameters:
+
+- grant_type: indicates the authorization type, where the value is fixed to "password", required.
+- username: indicates the user name, required.
+- password: indicates the user's password, required.
+- scope: indicates the scope of permissions, optional.
+
+Below is an example.
+
+```http
+POST /token HTTP/1.1
+Host: server.example.com
+Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=johndoe&password=A3ddj3w
+```
+
+In step C, the authentication server sends an access token to the client, and here is an example.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
+
+{
+  "access_token":"2YotnFZFEjr1zCsicMWpAA",
+  "token_type":"example",
+  "expires_in":3600,
+  "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
+  "example_parameter":"example_value"
+}
+```
+
+In the above code, the meaning of each parameter is described in the section "Authorization Code Mode".
+
+During this process, the client must not save the user's password.
+
+## IX. Client Mode
+
+Client Credentials Grant means that the client authenticates to the "service provider" in its own name, not in the name of the user. Strictly speaking, the client-side pattern is not a problem that the OAuth framework is designed to solve. In this model, the user registers directly with the client, and the client requests the service provider in its own name, but there is no authorization problem.
+
+! [Client Mode] (http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051207.png)
+
+Its steps are as follows:
+
+(A) The client authenticates to the authentication server and asks for an access token.
+>
+(B) After the authentication server confirms that it is correct, it provides the access token to the client.
+
+In Step A, the HTTP request made by the client contains the following parameters:
+
+- grant*type: indicates the authorization type, the value here is fixed as "client*credentials", required.
+- scope: indicates the scope of permissions, optional.
+
+```http
+POST /token HTTP/1.1
+Host: server.example.com
+Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+```
+
+The authentication server must authenticate the client in some way.
+
+In Step B, the authentication server sends an access token to the client, and here is an example.
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Cache-Control: no-store
+Pragma: no-cache
+
+{
+  "access_token":"2YotnFZFEjr1zCsicMWpAA",
+  "token_type":"example",
+  "expires_in":3600,
+  "example_parameter":"example_value"
+}
+```
+
+In the above code, the meaning of each parameter is described in the section "Authorization Code Mode".
 
 ## Ten. Update the token
 
