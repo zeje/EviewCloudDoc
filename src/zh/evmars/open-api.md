@@ -28,10 +28,11 @@ graph TD
     httpMethod --GET或Delete--> join[将参数key按ASCII排序</br>再拼接为k1=v1&k2=v2格式]
     httpMethod --其他请求--> contentType{判断ContentType}
     contentType --application/x-www-form-urlencoded--> join
-    contentType --其他--> signature["signature(param+X-Timestamp+SecureKey)"]
-    join --> signature
+    join --> signature["signature(param+X-Timestamp+SecureKey)"]
+    contentType --其他--> otherSignature["signature(request body+X-Timestamp+SecureKey)"]
 
     signature --> compare{对比请求头X-Sign}
+    otherSignature --> compare
     compare --不一致--> reject
     compare --一致--> auth
 

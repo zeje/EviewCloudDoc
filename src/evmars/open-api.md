@@ -28,10 +28,11 @@ graph TD
     httpMethod --"GET or Delete"--> join["Sort the parameter key </br> according to ASCII </br> and then splice it into </br> k1=v1&k2=v2 format."]
     httpMethod --"other method type"--> contentType{Judging ContentType}
     contentType --"application/x-www-form-urlencoded"--> join
-    contentType --other--> signature["signature(param+X-Timestamp+SecureKey)"]
-    join --> signature
+    join --> signature["signature(param+X-Timestamp+SecureKey)"]
+    contentType --"other"--> otherSignature["signature(request body+X-Timestamp+SecureKey)"]
 
     signature --> compare{compare X-Sign}
+    otherSignature --> compare
     compare --different--> reject
     compare --same--> auth
 
