@@ -48,6 +48,8 @@ graph TD
 
 The platform uses signatures to verify the integrity and legality of client requests.
 
+* get
+
 Example:
 
 ClientId is `testId`,
@@ -76,6 +78,39 @@ X-Sign: c23faa3c46784ada64423a8bba433f25
 
 {"status":200,result:[]}
 
+```
+
+* post
+
+ClientId is `testId`,
+SecureKey is `testSecure`.
+Client request interface: `/device-instance`, and signature method `md5`.
+The request body:
+
+``` json
+{
+  "id": "123456789088888",
+  "name": "123456789088888",
+  "productId": "katchu",
+  "productName": "katchu"
+}
+```
+
+Example:
+
+```text
+POST /device-instance
+X-Client-Id: testId
+X-Timestamp: 1687750302000
+X-Sign: 921eae6047759d3ad12e3dcb16347d6a
+Content-Type: application/json
+
+{
+  "id": "123456789088888",
+  "name": "123456789088888",
+  "productId": "katchu",
+  "productName": "katchu"
+}
 ```
 
 #### Sign-off

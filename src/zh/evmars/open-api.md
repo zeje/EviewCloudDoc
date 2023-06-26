@@ -50,6 +50,8 @@ graph TD
 
 平台使用签名来校验客户端请求的完整性以及合法性.
 
+* get 
+
 例:
 
 ClientId为`testId`,
@@ -67,6 +69,51 @@ GET /api/device?pageIndex=0&pageSize=20
 X-Client-Id: testId
 X-Timestamp: 1574993804802
 X-Sign: 837fe7fa29e7a5e4852d447578269523
+```
+
+响应结果:
+
+```text
+HTTP/1.1 200 OK
+X-Timestamp: 1574994269075
+X-Sign: c23faa3c46784ada64423a8bba433f25
+
+{"status":200,result:[]}
+
+```
+
+* post
+
+ClientId为`testId`,
+SecureKey为:`testSecure`.
+客户端请求接口: `/device-instance`,签名方式为`md5`.
+请求体为:
+
+``` json
+{
+  "id": "123456789088888",
+  "name": "123456789088888",
+  "productId": "katchu",
+  "productName": "katchu"
+}
+```
+
+
+示例:
+
+```text
+POST /device-instance
+X-Client-Id: testId
+X-Timestamp: 1687750302000
+X-Sign: 921eae6047759d3ad12e3dcb16347d6a
+Content-Type: application/json
+
+{
+  "id": "123456789088888",
+  "name": "123456789088888",
+  "productId": "katchu",
+  "productName": "katchu"
+}
 ```
 
 响应结果:
