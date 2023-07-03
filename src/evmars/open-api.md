@@ -13,19 +13,19 @@ category:
 ``` mermaid
 graph TD
 
-	userRequest(request) --> xClientId{does headers </br> contains </br>X-Client-Id?}
-	xClientId --yes--> getHeader[get headers </br>X-Sign</br>和</br>X-Timestamp]
-    xClientId --"no open-api request"--> auth[Enter the access control process </br> and execute the business logic.]
+	userRequest(request) --> xClientId{does headers   contains  X-Client-Id?}
+	xClientId --yes--> getHeader[get headers  X-Sign 和 X-Timestamp]
+    xClientId --"no open-api request"--> auth[Enter the access control process   and execute the business logic.]
     auth --response--> open-api{is it the open-api request}
-    open-api --yes--> setHeader["Sign and set the response header:X-Timestamp,X-Sign</br>Signature algorithm </br> Signature ( response+X-Timestamp+SecureKey )"]
+    open-api --yes--> setHeader["Sign and set the response header:X-Timestamp,X-Sign Signature algorithm   Signature ( response+X-Timestamp+SecureKey )"]
     setHeader --response--> response(response result)
     open-api --no--> response
 
-	getHeader --> checkHeader{Check that the difference </br> between </br> X-Timestamp and server time </br> cannot be 5 minutes.}
+	getHeader --> checkHeader{Check that the difference   between   X-Timestamp and server time   cannot be 5 minutes.}
     checkHeader --"ok"--> checkSign[Start inspection and signing]
     checkHeader --"no ok"--> reject[reject request]
 	checkSign --> httpMethod{Judging request mode}
-    httpMethod --"GET or Delete"--> join["Sort the parameter key </br> according to ASCII </br> and then splice it into </br> k1=v1&k2=v2 format."]
+    httpMethod --"GET or Delete"--> join["Sort the parameter key   according to ASCII   and then splice it into   k1=v1&k2=v2 format."]
     httpMethod --"other method type"--> contentType{Judging ContentType}
     contentType --"application/x-www-form-urlencoded"--> join
     join --> signature["signature(param+X-Timestamp+SecureKey)"]
@@ -103,7 +103,7 @@ Example:
 POST /device-instance
 X-Client-Id: testId
 X-Timestamp: 1687750302000
-X-Sign: 921eae6047759d3ad12e3dcb16347d6a
+X-Sign: 69c89f9ee7c6e7d2e03be2ac143247d6
 Content-Type: application/json
 
 {
@@ -113,6 +113,139 @@ Content-Type: application/json
   "productName": "katchu"
 }
 ```
+
+#### Reference tagging algorithm
+
+::: code-tabs#shell
+
+@tab:active java
+
+``` java
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class OpenApiUtils {
+
+    public static String signByQuery(String timestamp,
+                                     byte[] secureKey,
+                                     MessageDigest digest,
+                                     Map<String, String[]> query) {
+        byte[] param = new TreeMap<>(query)
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey() != null)
+                .map(e -> e.getKey().concat("=")
+                           .concat(e.getValue() == null
+                                   ? ""
+                                   : Arrays.stream(e.getValue()).collect(Collectors.joining(","))))
+                .collect(Collectors.joining("&"))
+                .getBytes();
+        digest.update(param);
+        digest.update(timestamp.getBytes());
+        digest.update(secureKey);
+
+        return Hex.encodeHexString(digest.digest());
+    }
+
+    public static String signByPost(String timestamp,
+                                    byte[] secureKey,
+                                    MessageDigest digest,
+                                    String jsonString) {
+        digest.update(jsonString.getBytes());
+        digest.update(timestamp.getBytes());
+        digest.update(secureKey);
+        return Hex.encodeHexString(digest.digest());
+    }
+}
+```
+
+@tab C##
+
+``` csharp
+using Microsoft.Extensions.Primitives;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace EvmarsSign
+{
+    public class OpenApiUtils
+    {
+        public static string signByQuery(String timestamp,
+                                     byte[] secureKey,
+                                     IEnumerable<KeyValuePair<string, StringValues>> query)
+        {
+            string paramString = string.Join("&", query
+               .OrderBy(it => it.Key)
+               .Select(it =>
+               {
+                   return it.Key + "=" + string.Join(",", it.Value);
+               }));
+
+            MD5 md5 = MD5.Create();
+
+            byte[] bytes = Encoding.Default.GetBytes(paramString)
+                   .Concat(
+                   Encoding.Default.GetBytes(timestamp)
+                   )
+                   .Concat(
+                   secureKey
+                   ).ToArray();
+            return ToHexString(md5.ComputeHash(bytes));
+        }
+
+        public static string signByPost(String timestamp,
+                                        byte[] secureKey,
+                                        String jsonString)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] bytes = Encoding.Default.GetBytes(jsonString)
+                    .Concat(
+                    Encoding.Default.GetBytes(timestamp)
+                    )
+                    .Concat(
+                    secureKey
+                    ).ToArray();
+            return ToHexString(md5.ComputeHash(bytes));
+        }
+
+
+        public static string ToHexString(byte[] bytes)
+        {
+            string hexString = string.Empty;
+            if (bytes != null)
+            {
+                StringBuilder strB = new StringBuilder();
+
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    strB.Append(bytes[i].ToString("x2"));
+                }
+                hexString = strB.ToString();
+            }
+            return hexString;
+        }
+    }
+}
+
+```
+
+@tab nodejs
+
+``` javascript
+// todo
+```
+
+@tab dart
+
+``` javascript
+// todo
+```
+
+:::
 
 #### Sign-off
 

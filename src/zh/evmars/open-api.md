@@ -13,19 +13,19 @@ category:
 ``` mermaid
 graph TD
 
-	userRequest(用户请求) --> xClientId{请求头中</br>是否携带</br>X-Client-Id}
-	xClientId --是--> getHeader[获取请求头</br>X-Sign</br>和</br>X-Timestamp]
-    xClientId --"否，非OpenAPI请求"--> auth[进入权限控制流程</br>并执行业务逻辑]
+	userRequest(用户请求) --> xClientId{请求头中 是否携带 X-Client-Id}
+	xClientId --是--> getHeader[获取请求头 X-Sign 和 X-Timestamp]
+    xClientId --"否，非OpenAPI请求"--> auth[进入权限控制流程 并执行业务逻辑]
     auth --响应--> open-api{是否为OpenApi请求}
-    open-api --是--> setHeader["签名并设置响应头:X-Timestamp,X-Sign</br>签名算法Signature ( response+X-Timestamp+SecureKey )"]
+    open-api --是--> setHeader["签名并设置响应头:X-Timestamp,X-Sign 签名算法Signature ( response+X-Timestamp+SecureKey )"]
     setHeader --响应--> response(响应结果)
     open-api --否--> response
 
-	getHeader --> checkHeader{校验X-Timestamp</br>与服务器时间</br>不能相差5分钟}
+	getHeader --> checkHeader{校验X-Timestamp 与服务器时间 不能相差5分钟}
     checkHeader --通过--> checkSign[开始验签]
     checkHeader --不通过--> reject[拒绝请求]
 	checkSign --> httpMethod{判断请求方式}
-    httpMethod --GET或Delete--> join[将参数key按ASCII排序</br>再拼接为k1=v1&k2=v2格式]
+    httpMethod --GET或Delete--> join[将参数key按ASCII排序 再拼接为k1=v1&k2=v2格式]
     httpMethod --其他请求--> contentType{判断ContentType}
     contentType --application/x-www-form-urlencoded--> join
     join --> signature["signature(param+X-Timestamp+SecureKey)"]
@@ -117,6 +117,16 @@ Content-Type: application/json
 }
 ```
 
+请特别注意，假如您的请求体为，您需要保证签名与POST的请求体的内容是完全一致的，一个字符的差异都会导致接口请求失败。
+``` json
+{
+  "id": "123456789088888",
+  "name": "123456789088888",
+  "productId": "katchu",
+  "productName": "katchu"
+}
+```
+
 响应结果:
 
 ```text
@@ -127,6 +137,140 @@ X-Sign: c23faa3c46784ada64423a8bba433f25
 {"status":200,result:[]}
 
 ```
+
+
+#### 参考加签算法
+
+::: code-tabs#shell
+
+@tab:active java
+
+``` java
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class OpenApiUtils {
+
+    public static String signByQuery(String timestamp,
+                                     byte[] secureKey,
+                                     MessageDigest digest,
+                                     Map<String, String[]> query) {
+        byte[] param = new TreeMap<>(query)
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey() != null)
+                .map(e -> e.getKey().concat("=")
+                           .concat(e.getValue() == null
+                                   ? ""
+                                   : Arrays.stream(e.getValue()).collect(Collectors.joining(","))))
+                .collect(Collectors.joining("&"))
+                .getBytes();
+        digest.update(param);
+        digest.update(timestamp.getBytes());
+        digest.update(secureKey);
+
+        return Hex.encodeHexString(digest.digest());
+    }
+
+    public static String signByPost(String timestamp,
+                                    byte[] secureKey,
+                                    MessageDigest digest,
+                                    String jsonString) {
+        digest.update(jsonString.getBytes());
+        digest.update(timestamp.getBytes());
+        digest.update(secureKey);
+        return Hex.encodeHexString(digest.digest());
+    }
+}
+```
+
+@tab C##
+
+``` csharp
+using Microsoft.Extensions.Primitives;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace EvmarsSign
+{
+    public class OpenApiUtils
+    {
+        public static string signByQuery(String timestamp,
+                                     byte[] secureKey,
+                                     IEnumerable<KeyValuePair<string, StringValues>> query)
+        {
+            string paramString = string.Join("&", query
+               .OrderBy(it => it.Key)
+               .Select(it =>
+               {
+                   return it.Key + "=" + string.Join(",", it.Value);
+               }));
+
+            MD5 md5 = MD5.Create();
+
+            byte[] bytes = Encoding.Default.GetBytes(paramString)
+                   .Concat(
+                   Encoding.Default.GetBytes(timestamp)
+                   )
+                   .Concat(
+                   secureKey
+                   ).ToArray();
+            return ToHexString(md5.ComputeHash(bytes));
+        }
+
+        public static string signByPost(String timestamp,
+                                        byte[] secureKey,
+                                        String jsonString)
+        {
+            MD5 md5 = MD5.Create();
+            byte[] bytes = Encoding.Default.GetBytes(jsonString)
+                    .Concat(
+                    Encoding.Default.GetBytes(timestamp)
+                    )
+                    .Concat(
+                    secureKey
+                    ).ToArray();
+            return ToHexString(md5.ComputeHash(bytes));
+        }
+
+
+        public static string ToHexString(byte[] bytes)
+        {
+            string hexString = string.Empty;
+            if (bytes != null)
+            {
+                StringBuilder strB = new StringBuilder();
+
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    strB.Append(bytes[i].ToString("x2"));
+                }
+                hexString = strB.ToString();
+            }
+            return hexString;
+        }
+    }
+}
+
+```
+
+@tab nodejs
+
+``` javascript
+// todo
+```
+
+@tab dart
+
+``` javascript
+// todo
+```
+
+:::
 
 #### 验签
 
