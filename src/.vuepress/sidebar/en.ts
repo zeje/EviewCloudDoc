@@ -14,11 +14,10 @@ export const enSidebar = sidebar({
       collapsible: false,
       // 必要的，分组的子项目
       children: [
+        "/guide/loctube/README.md",
         "/guide/sdk-demo/README.md",
-        "/guide/loctube-lite/README.md",
         "/guide/forward/README.md",
         "/guide/third-party/README.md",
-        "/guide/loctube/README.md",
       ]
     },
     {

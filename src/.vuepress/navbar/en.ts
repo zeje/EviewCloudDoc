@@ -24,10 +24,6 @@ export const enNavbar = navbar([
             text: "OAuth2.0", icon: "iconfont icon-page",
             link: "/oauth/README.md"
           },
-          {
-            text: "agps", icon: "iconfont icon-page",
-            link: "/agps/README.md"
-          }
         ]
       }
     ],

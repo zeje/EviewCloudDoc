@@ -1,11 +1,11 @@
 ---
-title: SDK DEMO
+title: SDK demo
 icon: iconfont icon-guide
 ---
 
 ## Introduction
 
-SDK DEMO
+SDK demo
 
 Eviewgps provides tcp protocol, and customers can access it by themselves by referring to the protocol document and SDK demo.
 Self-access has a great disadvantage, that is, the period of service realization is very long, ranging from half a year to one year.
