@@ -258,10 +258,220 @@ namespace EvmarsSign
 
 ```
 
+@tab kotlin
+
+``` kotlin
+import java.security.MessageDigest
+
+object OpenApiUtils {
+    val digest = MessageDigest.getInstance("MD5")
+    @OptIn(ExperimentalStdlibApi::class)
+    fun signByQuery(timestamp: String, secureKey: String, digest: MessageDigest, query: Map<String, String>): String {
+        val param = query.entries.joinToString("&") { "${it.key}=${it.value}" }
+        digest.update(param.toByteArray())
+        digest.update(timestamp.toByteArray())
+        digest.update(secureKey.toByteArray())
+        return digest.digest().toHexString()
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun signByPost(timestamp: String, secureKey: String, digest: MessageDigest, jsonString: String): String {
+        digest.update(jsonString.toByteArray())
+        digest.update(timestamp.toByteArray())
+        digest.update(secureKey.toByteArray())
+        return digest.digest().toHexString()
+    }
+}
+```
+
+@tab object-c
+
+``` object-c
+
+--------------------------------OpenAPIUtil.h-----------------------------
+
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface OpenAPIUtil : NSObject
+
++ (NSString *)signByQueryWithTimestamp:(NSString *)timestamp
+                             secureKey:(NSData *)secureKey
+                                 query:(NSDictionary<NSString *, NSArray<NSString *> *> *)query;
+
++ (NSString *)signByPostWithTimestamp:(NSString *)timestamp
+                            secureKey:(NSString *)secureKey
+                           parameters:(NSDictionary *)parameter;
+
++ (NSString *)hexStringFromData:(NSData *)data;
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+-------------------------------OpenAPIUtil.m------------------------------
+
+#import "OpenAPIUtil.h"
+#import <CommonCrypto/CommonDigest.h>
+
+@implementation OpenAPIUtil
+
+// EVMars平台签名规则 GET
++ (NSString *)signByQueryWithTimestamp:(NSString *)timestamp
+                             secureKey:(NSData *)secureKey
+                                 query:(NSDictionary<NSString *, NSArray<NSString *> *> *)query {
+    NSMutableString *param = [[NSMutableString alloc] init];
+    NSArray *sortedKeys = [[query allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    for (NSString *key in sortedKeys) {
+        if (key) {
+            NSArray *values = [query objectForKey:key];
+            NSString *valuesString = [values componentsJoinedByString:@","];
+            [param appendFormat:@"%@=%@&", key, valuesString];
+        }
+    }
+    // Remove the last '&' character
+    if ([param length] > 0) {
+        [param deleteCharactersInRange:NSMakeRange([param length]-1, 1)];
+    }
+
+    const char *cParam = [param UTF8String];
+    const char *cTimestamp = [timestamp UTF8String];
+    
+    NSMutableData *data = [NSMutableData data];
+    [data appendBytes:cParam length:strlen(cParam)];
+    [data appendBytes:cTimestamp length:strlen(cTimestamp)];
+    [data appendData:secureKey];
+
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(data.bytes, (CC_LONG)data.length, result);
+
+    NSMutableString *hexString = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [hexString appendFormat:@"%02x", result[i]];
+    }
+    
+    return [NSString stringWithString:hexString];
+}
+
+// Evmars-Loctube平台签名规则 POST
++ (NSString *)signByPostWithTimestamp:(NSString *)timestamp
+                            secureKey:(NSString *)secureKey
+                           parameters:(NSDictionary *)parameters {
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:NSJSONWritingFragmentsAllowed error:nil];
+    const char *cTimestamp = [timestamp UTF8String];
+    const char *cSecureKey = [secureKey UTF8String];
+    NSMutableData *data = [NSMutableData data];
+    [data appendData:jsonData];
+    [data appendBytes:cTimestamp length:strlen(cTimestamp)];
+    [data appendBytes:cSecureKey length:strlen(cSecureKey)];
+
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5(data.bytes, (CC_LONG)data.length, result);
+    
+    NSMutableString *hexString = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+        [hexString appendFormat:@"%02x", result[i]];
+    }
+    return [NSString stringWithString:hexString];
+}
+
+
++ (NSString *)hexStringFromData:(NSData *)data {
+    Byte *bytes = (Byte *)[data bytes];
+    //下面是Byte转换为16进制。
+    NSString *hexStr = @"";
+    for(int i = 0; i < [data length]; i ++){
+        NSString *newHexStr = [NSString stringWithFormat:@"%x",bytes[i] & 0xff];///16进制数
+        if([newHexStr length] == 1)
+            hexStr = [NSString stringWithFormat:@"%@0%@",hexStr,newHexStr];
+        else
+            hexStr = [NSString stringWithFormat:@"%@%@",hexStr,newHexStr];
+    }
+    return hexStr;
+}
+
+@end
+```
+
 @tab nodejs
 
 ``` javascript
-// todo
+
+import CryptoJS from 'crypto-js'
+ /*
+   @param query 对象参数
+   @param time 时间戳参数
+   @param secureVal 签名秘钥
+   @description GET接口签名方式
+*/ 
+  function signByQuery (query, time, secureVal) {
+    if(Object.values(query).length<=0||time=="")return;
+    const secureKey=secureVal// 签名秘钥
+    const keys=Object.keys(query).sort();
+    const signStr=keys.map(key => {
+        const value = query[key];
+        if (Array.isArray(value)) {
+            return value.map(val => key + '=' + val).join(',');
+        } else {
+            return key + '=' + value;
+        }
+    })
+    .join('&').concat(time).concat(secureKey);
+    const sign= CryptoJS.MD5(signStr).toString();
+    return sign
+  }
+
+ /*
+   @param jsonString 字符串参数，将参数JSON.stringify。作为字符串传入
+   @param time 时间戳参数
+   @param secureVal 签名秘钥
+   @description POST接口签名方式
+*/ 
+function signByPost(jsonString, time, secureVal) {
+  if(jsonString==""||time=="")return;
+  const secureKey=secureVal//签名秘钥
+  const str=jsonString.trim()+time.trim()+secureKey.trim();
+  const normalizedInput = CryptoJS.enc.Utf8.parse(str.trim());
+  const sign= CryptoJS.MD5(normalizedInput).toString(CryptoJS.enc.Hex).toLocaleUpperCase();
+  return sign;
+},
+
+/*
+  示例：
+*/
+http.interceptors.request.use(
+  (config) => {
+    /* 请求之前拦截器。可以使用async await 做异步操作 */
+    const time=new Date().getTime().toString();
+    const secureKey=import.meta.env.VITE_SECUREKEY// 签名秘钥
+    config.header = {
+      ...config.header,
+	    'X-Client-Id':import.meta.env.VITE_CLIENTID,
+	    'X-Timestamp':time,
+    };
+    switch (config.method?.toLocaleUpperCase()) {
+      case "POST":
+        const isHasVal=Object.values(config.data).length>0;
+        const value=isHasVal ? JSON.stringify(config.data) : '';
+        config.header['X-Sign'] =signByPost(value, time,secureKey);
+        break;
+      case "GET":
+        config.header['X-Sign'] =signByQuery(config.params||{}, time,secureKey);
+        break;
+    }
+    /*
+     if (!token) { // 如果token不存在，return Promise.reject(config) 会取消本次请求
+       return Promise.reject(config)
+     }
+     */
+    return config;
+  },
+  (config) => {
+    return Promise.reject(config);
+  }
+);
+
 ```
 
 @tab dart
